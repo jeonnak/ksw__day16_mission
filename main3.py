@@ -1,43 +1,64 @@
-class Node():  # 노드 모양의 데이터형은 없습니다. 클래스 문법을 사용하여 노드 데이터형을 정의합니다.
-	def __init__(self):
-		self.data = None  # 데이터가 저장되는 부분
-		self.llink = None  # 왼쪽 링크가 저장되는 부분
-		self.rlink = None  # 오른쪽 링크가 저장되는 부분
+import random
 
-def print_nodes(start):  # 연결 리스트의 전체 노드를 출력해줍니다. 매개변수로 시작 노드를 전달 받습니다.
-	current = start  # 전달 받은 시작 노드를 현재 노드로 지정해줍니다.
-	if current.rlink == None:
-		return  # 반환해줍니다.
-	print("정방향 --> ", end=' ')  # 정방향 출력
-	print(current.data, end=' ')
-	while current.rlink != None:
-		current = current.rlink
-		print(current.data, end=' ')
-	print()
-	print("역방향 --> ", end=' ')  # 역방향 출력
-	print(current.data, end=' ')
+## 함수 선언 부분 ##
+def is_stackfull():  # 스택이 꽉 찼는지 여부
+	global SIZE, stack, top
+	if top >= SIZE-1:
+		return True
+	else :
+		return False
 
-	while current.llink != None:
-		current = current.llink
-		print(current.data, end=' ')
+def push(data):  # 스택에 데이터를 삽입
+	global SIZE, stack, top
+	if is_stackfull():
+		print("스택이 꽉 찼습니다.")
+		return
+	top += 1
+	stack[top] = data
+
+def is_stackempty():  # 스택이 비었는지 확인
+	global SIZE, stack, top
+	if top == -1:
+		return True
+	else :
+		return False
+
+def pop():  # 스택에서 데이터를 추출
+	global SIZE, stack, top
+	if is_stackempty():
+		return None
+	data = stack[top]
+	stack[top] = None
+	top -= 1
+	return data
+
+def peek() :  # 데이터 확인
+	global SIZE, stack, top
+	if is_stackempty():
+		return None
+	return stack[top]
 
 # 전역 변수
-
-head, current, pre = None, None, None
-data_array = ["다현", "정연", "쯔위", "사나", "지효"]
+SIZE = 10
+stack = [None for _ in range(SIZE)]
+top = -1
 
 # 메인 코드
 if __name__ == "__main__":
 
-	node = Node()
-	node.data = data_array[0]
-	head = node
+	color_array = ["빨강", "파랑", "초록", "노랑", "보라", "주황"]
+	random.shuffle(color_array)
 
-	for data in data_array[1:]:
-		pre = node
-		node = Node()
-		node.data = data
-		pre.rlink = node
-		node.llink = pre
+	print("과자집에 가는길 : ", end=' ')
+	for color in color_array:
+		push(color)
+		print(color, "-->", end=' ')
+	print("과자집")
 
-	print_nodes(head)
+	print("우리집에 오는길 : ", end=' ')
+	while True:
+		color = pop()
+		if color == None:
+			break
+		print(color, "-->", end=' ')
+	print("우리집")
