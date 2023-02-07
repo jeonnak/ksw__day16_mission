@@ -1,71 +1,61 @@
-# 큐가 꽉 찼는가?
-def is_queue_full():
-	global SIZE, queue, front, rear
-	if (rear + 1) % SIZE == front:
-		return True
-	else:
-		return False
+import random
 
-# 큐가 비었는지 체크
-def is_queue_empty():
-	global SIZE, queue, front, rear
-	if front == rear:
-		return True
-	else:
-		return False
+class Tree_node() :
+	def __init__ (self):
+		self.left = None
+		self.data = None
+		self.right = None
 
-# 큐에 데이터를 삽입
-def en_queue(data):
-	global SIZE, queue, front, rear
-	if is_queue_full():
-		print("큐가 꽉 찼습니다.")
+memory = []
+root = None
+
+# 편의점 물품
+data_ary = ['바나나 맛 우유', '레쓰비 캔커피', '츄파춥스', '도시락', '삼다수', '코카콜라' , '삼각김밥']
+# 20개 중복o
+sell_ary = [random.choice(data_ary) for _ in range(20)]
+
+print('오늘 판매된 물건(중복O) -->', sell_ary)
+
+node = Tree_node()
+node.data = sell_ary[0]
+root = node
+memory.append(node)
+
+# 이진 탐색 트리
+
+for name in sell_ary[1:]:
+
+	node = Tree_node()
+	node.data = name
+
+	current = root
+	while True :
+		if name == current.data:
+			break
+		if name < current.data:
+			if current.left == None:
+				current.left = node
+
+                #  판매되지 않은 물품이 자리함
+				memory.append(node)
+				break
+			current = current.left
+		else :
+			if current.right == None:
+				current.right = node
+                #  판매되지 않은 물품이 자리함
+				memory.append(node)
+				break
+			current = current.right
+
+print("이진 탐색 트리 구성 완료!")
+
+def order(node):
+	if node == None:
 		return
-	rear = (rear + 1) % SIZE
-	queue[rear] = data
+	print(node.data, end = ' ')
+	order(node.left)
+	order(node.right)
 
-# 큐에서 데이터를 추출
-def de_queue():
-	global SIZE, queue, front, rear
-	if is_queue_empty():
-		print("큐가 비었습니다.")
-		return None
-	front = (front + 1) % SIZE
-	data = queue[front]
-	queue[front] = None
-	return data
-
-# (front+1)%SIZE 위치의 데이터 확인.
-def peek():
-	global SIZE, queue, front, rear
-	if is_queue_empty():
-		print("큐가 비었습니다.")
-		return None
-	return queue[(front + 1) % SIZE]
-
-def call_waiting() :
-	global SIZE, queue, front, rear
-
-	time = 0
-
-	for i in range((front+1)% SIZE, (rear+1)%SIZE):
-		time += queue[i][1]  # 대기시간을 총합해줍니다.
-
-	return time
-
-# 전역 변수
-SIZE = 6
-queue = [ None for _ in range(SIZE) ]
-front = rear = 0
-
-# 메인 코드
-if __name__ == "__main__" :
-	call_status = [('사용', 9), ('고장', 3), ('환불', 4), ('환불', 4), ('고장', 3)]
-
-	for call in call_status :
-		print("귀하의 대기 예상시간은 ", call_waiting(), "분입니다.")
-		print("현재 대기 콜 --> ", queue)
-		en_queue(call)
-		print()
-
-	print("최종 대기 콜 --> ", queue)
-	print("프로그램 종료!")
+print('오늘 판매된 종류(중복X)--> ', end = ' ')
+order(root)
