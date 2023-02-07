@@ -1,75 +1,71 @@
 # 큐가 꽉 찼는가?
-def is_queue_full() :
+def is_queue_full():
 	global SIZE, queue, front, rear
-	if (rear == SIZE-1) :
+	if (rear + 1) % SIZE == front:
 		return True
-	else :
+	else:
 		return False
 
 # 큐가 비었는지 체크
-def is_queue_empty() :
+def is_queue_empty():
 	global SIZE, queue, front, rear
-	if (front == rear) :
+	if front == rear:
 		return True
-	else :
+	else:
 		return False
 
 # 큐에 데이터를 삽입
-def en_queue(data) :
+def en_queue(data):
 	global SIZE, queue, front, rear
-	if (is_queue_full()) :
+	if is_queue_full():
 		print("큐가 꽉 찼습니다.")
 		return
-	rear += 1
+	rear = (rear + 1) % SIZE
 	queue[rear] = data
 
 # 큐에서 데이터를 추출
-def de_queue() :
+def de_queue():
 	global SIZE, queue, front, rear
-	if (is_queue_empty()) :
+	if is_queue_empty():
 		print("큐가 비었습니다.")
 		return None
-	front += 1
+	front = (front + 1) % SIZE
 	data = queue[front]
 	queue[front] = None
-
-
-# 맨 앞쪽 손님들부터 식당에 들어갈 수 있도록
-# 한칸씩 앞으로 당겨주는 과정입니다.
-	for i in range(front + 1, rear + 1):
-		queue[i - 1] = queue[i]
-		queue[i] = None
-
-	front = -1
-	rear -= 1
-#뒤로 다시 당김
-
 	return data
 
-# front+1 위치의 데이터 확인.
-def peek() :
+# (front+1)%SIZE 위치의 데이터 확인.
+def peek():
 	global SIZE, queue, front, rear
-	if (is_queue_empty()) :
+	if is_queue_empty():
 		print("큐가 비었습니다.")
 		return None
-	return queue[front+1]
+	return queue[(front + 1) % SIZE]
+
+def call_waiting() :
+	global SIZE, queue, front, rear
+
+	time = 0
+
+	for i in range((front+1)% SIZE, (rear+1)%SIZE):
+		time += queue[i][1]  # 대기시간을 총합해줍니다.
+
+	return time
 
 # 전역 변수
-SIZE = 5
+SIZE = 6
 queue = [ None for _ in range(SIZE) ]
-front = rear = -1
+front = rear = 0
 
 # 메인 코드
 if __name__ == "__main__" :
-	en_queue('정국')
-	en_queue('뷔')
-	en_queue('지민')
-	en_queue('진')
-	en_queue('슈가')
-	print("대기 줄 상태 : ", queue)
+	call_status = [('사용', 9), ('고장', 3), ('환불', 4), ('환불', 4), ('고장', 3)]
 
-	for _ in range(rear+1) :
-		print(de_queue(), '님 식당에 들어감')
-		print("대기 줄 상태 : ", queue)
+	for call in call_status :
+		print("귀하의 대기 예상시간은 ", call_waiting(), "분입니다.")
+		print("현재 대기 콜 --> ", queue)
+		en_queue(call)
+		print()
 
-	print("식당 영업 종료!")
+	print("최종 대기 콜 --> ", queue)
+	print("프로그램 종료!")
